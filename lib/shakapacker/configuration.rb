@@ -19,6 +19,10 @@ class Shakapacker::Configuration
     fetch(:dev_server)
   end
 
+  def bundler_type
+    fetch(:bundler_type)
+  end
+
   def compile?
     fetch(:compile)
   end

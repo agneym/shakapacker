@@ -25,6 +25,11 @@ module Shakapacker
       @package_json ||= PackageJson.read(@app_path)
     end
 
+    protected
+      def rspack?
+        @config.bundler_type == "rspack"
+      end
+
     private
       def find_webpack_config
         possible_paths = %w[ts js].map do |ext|

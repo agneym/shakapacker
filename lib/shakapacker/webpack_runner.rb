@@ -51,7 +51,11 @@ module Shakapacker
     private
 
       def build_cmd
-        package_json.manager.native_exec_command("webpack")
+        if rspack?
+          package_json.manager.native_exec_command("rspack", ["build"])
+        else
+          package_json.manager.native_exec_command("webpack")
+        end
       end
   end
 end

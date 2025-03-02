@@ -1,4 +1,15 @@
-const { moduleExists } = require("shakapacker")
+const resolvedPath = (packageName) => {
+  try {
+    return require.resolve(packageName)
+  } catch (e) {
+    if (e.code !== "MODULE_NOT_FOUND") {
+      throw e
+    }
+    return null
+  }
+}
+
+const moduleExists = (packageName) => !!resolvedPath(packageName)
 
 module.exports = function config(api) {
   const validEnv = ["development", "test", "production"]

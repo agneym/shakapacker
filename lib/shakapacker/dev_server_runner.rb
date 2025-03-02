@@ -76,7 +76,8 @@ module Shakapacker
         end
 
         cmd += ["--config", @webpack_config]
-        cmd += ["--progress", "--color"] if @pretty
+
+        cmd += ["--progress", "--color"] if @pretty && !rspack?
 
         # Default behavior of webpack-dev-server is @hot = true
         cmd += ["--hot", "only"] if @hot == "only"
@@ -85,12 +86,17 @@ module Shakapacker
         cmd += @argv
 
         Dir.chdir(@app_path) do
+          puts "cmd: #{cmd}"
           Kernel.exec env, *cmd
         end
       end
 
       def build_cmd
-        package_json.manager.native_exec_command("webpack", ["serve"])
+        if rspack?
+          package_json.manager.native_exec_command("rspack", ["serve"])
+        else
+          package_json.manager.native_exec_command("webpack", ["serve"])
+        end
       end
   end
 end

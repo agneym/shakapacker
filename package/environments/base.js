@@ -6,10 +6,13 @@ const { basename, dirname, join, relative, resolve } = require("path")
 const extname = require("path-complete-extname")
 const WebpackAssetsManifest = require("webpack-assets-manifest")
 const webpack = require("webpack")
+const { rspack } = require("@rspack/core")
+
 const rules = require("../rules")
 const config = require("../config")
 const { isProduction } = require("../env")
 const { moduleExists } = require("../utils/helpers")
+const { isRspack } = require("../utils/getBundlerType")
 
 const getFilesInDirectory = (dir, includeNested) => {
   if (!existsSync(dir)) {
@@ -72,21 +75,41 @@ const getModulePaths = () => {
   return result
 }
 
+const getAssetManifest = () => {
+  // if (isRspack()) {
+  //   return new RspackManifestPlugin({
+  //     publicPath: config.publicPathWithoutCDN,
+  //     fileName: config.manifestPath,
+  //     writeToFileEmit: true,
+  //     useEntryKeys: true
+  //   })
+  // }
+
+  return new WebpackAssetsManifest({
+    entrypoints: true,
+    writeToDisk: true,
+    output: config.manifestPath,
+    entrypointsUseAssets: true,
+    publicPath: config.publicPathWithoutCDN
+  })
+}
+
 const getPlugins = () => {
+  const EnvironmentPlugin = isRspack()
+    ? rspack.EnvironmentPlugin
+    : webpack.EnvironmentPlugin
+  const assetsManifest = getAssetManifest()
   const plugins = [
-    new webpack.EnvironmentPlugin(process.env),
-    new WebpackAssetsManifest({
-      entrypoints: true,
-      writeToDisk: true,
-      output: config.manifestPath,
-      entrypointsUseAssets: true,
-      publicPath: config.publicPathWithoutCDN
-    })
+    new EnvironmentPlugin(process.env),
+    assetsManifest
+    // new EntrypointManifestPlugin()
   ]
 
   if (moduleExists("css-loader") && moduleExists("mini-css-extract-plugin")) {
     const hash = isProduction || config.useContentHash ? "-[contenthash:8]" : ""
-    const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+    const MiniCssExtractPlugin = isRspack()
+      ? rspack.CssExtractRspackPlugin
+      : require("mini-css-extract-plugin")
     plugins.push(
       new MiniCssExtractPlugin({
         filename: `css/[name]${hash}.css`,
