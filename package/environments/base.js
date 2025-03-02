@@ -6,10 +6,12 @@ const extname = require('path-complete-extname')
 const { sync: globSync } = require('glob')
 const WebpackAssetsManifest = require('webpack-assets-manifest')
 const webpack = require('webpack')
+const rspack = require('@rspack/core')
 const rules = require('../rules')
 const { isProduction } = require('../env')
 const config = require('../config')
 const { moduleExists } = require('../utils/helpers')
+const { isRspack } = require('../utils/get_bundler_type')
 
 const getEntryObject = () => {
   const entries = {}
@@ -56,8 +58,11 @@ const getModulePaths = () => {
 }
 
 const getPlugins = () => {
+  const EnvironmentPlugin = isRspack()
+    ? rspack.EnvironmentPlugin
+    : webpack.EnvironmentPlugin
   const plugins = [
-    new webpack.EnvironmentPlugin(process.env),
+    new EnvironmentPlugin(process.env),
     new WebpackAssetsManifest({
       entrypoints: true,
       writeToDisk: true,
@@ -69,7 +74,9 @@ const getPlugins = () => {
 
   if (moduleExists('css-loader') && moduleExists('mini-css-extract-plugin')) {
     const hash = isProduction ? '-[contenthash:8]' : ''
-    const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+    const MiniCssExtractPlugin = isRspack()
+      ? rspack.CssExtractRspackPlugin
+      : require("mini-css-extract-plugin")
     plugins.push(
       new MiniCssExtractPlugin({
         filename: `css/[name]${hash}.css`,

@@ -1,6 +1,8 @@
 /* eslint global-require: 0 */
+const { rspack } = require("@rspack/core")
 const { canProcess, moduleExists } = require('./helpers')
 const inliningCss = require('../inliningCss')
+const { isRspack } = require('./get_bundler_type')
 
 const getStyleRule = (test, preprocessors = []) => {
   if (moduleExists('css-loader')) {
@@ -10,10 +12,20 @@ const getStyleRule = (test, preprocessors = []) => {
         options: { sourceMap: true }
       }))
 
+    const getStyleLoader = () => {
+      if (inliningCss) {
+        return "style-loader"
+      }
+      if (isRspack()) {
+        return rspack.CssExtractRspackPlugin.loader
+      }
+      return require("mini-css-extract-plugin").loader
+    }
+
     // style-loader is required when using css modules with HMR on the webpack-dev-server
 
     const use = [
-      inliningCss ? 'style-loader' : require('mini-css-extract-plugin').loader,
+      getStyleLoader(),
       {
         loader: require.resolve('css-loader'),
         options: {
