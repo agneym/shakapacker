@@ -23,9 +23,11 @@
     "webpack-assets-manifest": "^5.2.1",
     "webpack-cli": "^4.9.2 || ^5.0.0",
     "webpack-dev-server": "^4.9.0",
-    "webpack-merge": "^5.8.0"
+    "webpack-merge": "^5.8.0",
+    "@rspack/core": "^1.2.6"
   },
   "dependencies": {
+    "@rspack/core": "^1.2.6",
     "glob": "^7.2.0",
     "js-yaml": "^4.1.0",
     "path-complete-extname": "^1.0.0"

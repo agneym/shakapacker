@@ -68,8 +68,10 @@ module Webpacker
         env["WEBPACK_SERVE"] = "true"
 
         cmd = if node_modules_bin_exist?
+          return ["#{@node_modules_bin_path}/rspack", "serve"] if rspack?
           ["#{@node_modules_bin_path}/webpack", "serve"]
         else
+          return ["yarn", "rspack", "serve"] if rspack?
           ["yarn", "webpack", "serve"]
         end
 
@@ -79,7 +81,7 @@ module Webpacker
         end
 
         cmd += ["--config", @webpack_config]
-        cmd += ["--progress", "--color"] if @pretty
+        cmd += ["--progress", "--color"] if @pretty && !rspack?
 
         cmd += ["--hot"] if @hot
         cmd += @argv

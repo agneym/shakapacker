@@ -21,8 +21,10 @@ module Webpacker
       env["WEBPACKER_CONFIG"] = @webpacker_config
 
       cmd = if node_modules_bin_exist?
+        return ["#{@node_modules_bin_path}/rspack", "build"] if rspack?
         ["#{@node_modules_bin_path}/webpack"]
       else
+        return ["yarn", "rspack", "build"] if rspack?
         ["yarn", "webpack"]
       end
 

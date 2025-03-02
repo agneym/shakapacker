@@ -19,5 +19,11 @@ module Webpacker
         exit!
       end
     end
+
+    protected
+
+    def rspack?
+      @config.bundler_type == "rspack"
+    end
   end
 end
