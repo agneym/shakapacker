@@ -1,4 +1,4 @@
-const { moduleExists } = require('shakapacker')
+const { moduleExists } = require('../utils/helpers')
 
 module.exports = function config(api) {
   const validEnv = ['development', 'test', 'production']
