@@ -66,14 +66,15 @@ module Webpacker
         env = Webpacker::Compiler.env
         env["WEBPACKER_CONFIG"] = @webpacker_config
         env["WEBPACK_SERVE"] = "true"
+        env["RSPACK_CONFIG_VALIDATE"] = "loose"
 
         cmd = if node_modules_bin_exist?
-          return ["#{@node_modules_bin_path}/rspack", "serve"] if rspack?
           ["#{@node_modules_bin_path}/webpack", "serve"]
         else
-          return ["yarn", "rspack", "serve"] if rspack?
           ["yarn", "webpack", "serve"]
         end
+
+        cmd = ["yarn", "rspack", "serve"] if rspack?
 
         if @argv.include?("--debug-webpacker")
           cmd = [ "node", "--inspect-brk", "--trace-warnings" ] + cmd
