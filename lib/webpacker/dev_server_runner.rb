@@ -74,6 +74,7 @@ module Webpacker
           ["yarn", "webpack", "serve"]
         end
 
+        # node_modules bin doesn't seem to be working for rspack
         cmd = ["yarn", "rspack", "serve"] if rspack?
 
         if @argv.include?("--debug-webpacker")

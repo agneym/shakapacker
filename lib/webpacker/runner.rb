@@ -22,8 +22,8 @@ module Webpacker
 
     protected
 
-    def rspack?
-      @config.bundler_type == "rspack"
-    end
+      def rspack?
+        ENV["BUNDLER_TYPE"] == "rspack"
+      end
   end
 end

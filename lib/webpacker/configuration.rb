@@ -23,10 +23,6 @@ class Webpacker::Configuration
     fetch(:compile)
   end
 
-  def bundler_type
-    fetch(:bundler_type)
-  end
-
   def nested_entries?
     fetch(:nested_entries)
   end
