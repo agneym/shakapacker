@@ -22,7 +22,7 @@ if (runningWebpackDevServer) {
     allowedHosts: devServer.allowed_hosts,
     host: devServer.host,
     port: devServer.port,
-    https: devServer.https,
+    // https: devServer.https,
     hot: devServer.hmr,
     liveReload,
     historyApiFallback: { disableDotRule: true },

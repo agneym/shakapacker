@@ -5,6 +5,7 @@ const { basename, dirname, join, relative, resolve } = require('path')
 const extname = require('path-complete-extname')
 const { sync: globSync } = require('glob')
 const WebpackAssetsManifest = require('webpack-assets-manifest')
+const { RspackManifestPlugin} = require('rspack-manifest-plugin')
 const webpack = require('webpack')
 const rspack = require('@rspack/core')
 const rules = require('../rules')
@@ -12,6 +13,7 @@ const { isProduction } = require('../env')
 const config = require('../config')
 const { moduleExists } = require('../utils/helpers')
 const { isRspack } = require('../utils/get_bundler_type')
+const generateManifest = require('../utils/generate_manifest')
 
 const getEntryObject = () => {
   const entries = {}
@@ -57,19 +59,26 @@ const getModulePaths = () => {
   return result
 }
 
+const getManifestPlugin = () => isRspack() ? new RspackManifestPlugin({
+  fileName: config.manifestPath,
+  publicPath: config.publicPath,
+  generate: generateManifest,
+  writeToFileEmit: true
+}) : new WebpackAssetsManifest({
+  entrypoints: true,
+  writeToDisk: true,
+  output: config.manifestPath,
+  entrypointsUseAssets: true,
+  publicPath: true
+})
+
 const getPlugins = () => {
   const EnvironmentPlugin = isRspack()
     ? rspack.EnvironmentPlugin
     : webpack.EnvironmentPlugin
   const plugins = [
     new EnvironmentPlugin(process.env),
-    new WebpackAssetsManifest({
-      entrypoints: true,
-      writeToDisk: true,
-      output: config.manifestPath,
-      entrypointsUseAssets: true,
-      publicPath: true
-    })
+    getManifestPlugin()
   ]
 
   if (moduleExists('css-loader') && moduleExists('mini-css-extract-plugin')) {
